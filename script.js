@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 設定 & 定数
     // ==========================================
     // LINE公式アカウント等の遷移先URL（後から差し替え可能）
-    const LINE_REDIRECT_URL = "https://line.me/R/ti/p/@example";
+    const LINE_REDIRECT_URL = "https://lin.ee/vpU8yei";
 
     // 軸ごとの重み付け（合計1.0）
     const WEIGHTS = {
