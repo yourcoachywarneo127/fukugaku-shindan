@@ -52,9 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
     btnRestart.addEventListener('click', restartQuiz);
     
     // LINEボタンの動作設定
-    const btn-line= document.getElementById('line-btn');
-    if (btn-line) {
-      btn-line.onclick = () => {
+    const btnLine　= document.getElementById('line-btn');
+    if (btnLine) {
+      btnLine.onclick = () => {
         const lineId = "@506hokix"; //
         const message = "相談を希望します";
         const lineUrl = `https://line.me/R/oaMessage/${lineId}/?${encodeURIComponent(message)}`;
