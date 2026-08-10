@@ -51,9 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
     btnStart.addEventListener('click', startQuiz);
     btnRestart.addEventListener('click', restartQuiz);
     
-    // LINEリンク設定
-    if (btnLine) {
-        btnLine.href = LINE_REDIRECT_URL;
+    // LINEボタンの動作設定
+    const btn-line= document.getElementById('line-btn');
+    if (btn-line) {
+      btn-line.onclick = () => {
+        const lineId = "@506hokix"; //
+        const message = "相談を希望します";
+        const lineUrl = `https://line.me/R/oaMessage/${lineId}/?${encodeURIComponent(message)}`;
+
+        window.location.href = lineUrl;
+      };
     }
 
     // 選択肢ボタンにイベント追加
