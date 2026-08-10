@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 設定 & 定数
     // ==========================================
     // LINE公式アカウント等の遷移先URL（後から差し替え可能）
-    const LINE_REDIRECT_URL = "https://lin.ee/TSJe0Uw";
+    const LINE_REDIRECT_URL = "https://lin.ee/zEte7eg";
 
     // 軸ごとの重み付け（合計1.0）
     const WEIGHTS = {
@@ -51,17 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
     btnStart.addEventListener('click', startQuiz);
     btnRestart.addEventListener('click', restartQuiz);
     
-// LINEボタンの動作設定
-    const lineBtn = document.getElementById('line-btn');
-    if (lineBtn) {
-      lineBtn.onclick = () => {
-        const lineId = "@506hokix"; // 
-        const message = "相談を希望します";
-        const lineUrl = `https://line.me/R/oaMessage/${lineId}/?${encodeURIComponent(message)}`;
-
-        window.location.href = lineUrl;
-      };
+    // LINEリンク設定
+    if (btnLine) {
+        btnLine.href = LINE_REDIRECT_URL;
     }
+
     // 選択肢ボタンにイベント追加
     optionButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
