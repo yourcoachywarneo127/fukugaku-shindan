@@ -24,147 +24,44 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentQuestionIndex = 0;
     let userAnswers = []; // 各質問に対するスコアを保持
 
-document.addEventListener('DOMContentLoaded', () => {
-  let currentQuestionIndex = 0;
-  let userAnswers = [];
+    // ==========================================
+    // DOM要素の取得
+    // ==========================================
+    const screens = {
+        top: document.getElementById('screen-top'),
+        question: document.getElementById('screen-question'),
+        result: document.getElementById('screen-result')
+    };
 
-  // DOM要素
-  const startScreen = document.getElementById('start-screen');
-  const questionScreen = document.getElementById('question-screen');
-  const resultScreen = document.getElementById('result-screen');
+    const btnStart = document.getElementById('btn-start');
+    const btnRestart = document.getElementById('btn-restart');
+    const btnLine = document.getElementById('btn-line');
 
-  const startBtn = document.getElementById('start-btn');
-  const restartBtn = document.getElementById('restart-btn');
-  const restoreBtn = document.getElementById('restore-btn');
-  const restoreInput = document.getElementById('restore-id-input');
-  const restoreError = document.getElementById('restore-error');
+    const questionCard = document.getElementById('question-card');
+    const questionText = document.getElementById('question-text');
+    const questionNumber = document.getElementById('question-number');
+    const progressPercent = document.getElementById('progress-percent');
+    const progressBarFill = document.getElementById('progress-bar-fill');
+    const randomMessage = document.getElementById('random-message');
+    const optionButtons = document.querySelectorAll('.btn-option');
 
-  const questionText = document.getElementById('question-text');
-  const optionsContainer = document.getElementById('options-container');
-  const questionNumber = document.getElementById('question-number');
-  const progressBar = document.getElementById('progress');
-
-  // イベントリスナー
-  if (startBtn) startBtn.addEventListener('click', startQuiz);
-  if (restartBtn) restartBtn.addEventListener('click', resetQuiz);
-  if (restoreBtn) restoreBtn.addEventListener('click', handleRestore);
-
-  // 診断開始
-  function startQuiz() {
-    currentQuestionIndex = 0;
-    userAnswers = [];
-    showScreen(questionScreen);
-    renderQuestion();
-  }
-
-  // 質問の描画
-  function renderQuestion() {
-    if (typeof questions === 'undefined' || !questions[currentQuestionIndex]) return;
-
-    const q = questions[currentQuestionIndex];
-    questionText.textContent = q.text;
-    questionNumber.textContent = `質問 ${currentQuestionIndex + 1} / ${questions.length}`;
-    progressBar.style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
-
-    optionsContainer.innerHTML = '';
-    q.options.forEach((opt, idx) => {
-      const btn = document.createElement('button');
-      btn.className = 'option-btn';
-      btn.textContent = opt.label;
-      btn.addEventListener('click', () => handleAnswer(opt.score, idx));
-      optionsContainer.appendChild(btn);
-    });
-  }
-
-  // 回答処理
-  function handleAnswer(score, optionIndex) {
-    userAnswers.push({ score, optionIndex });
-    currentQuestionIndex++;
-
-    if (currentQuestionIndex < questions.length) {
-      renderQuestion();
-    } else {
-      showResult();
-    }
-  }
-
-  // 通常の結果表示
-  function showResult() {
-    const totalScore = userAnswers.reduce((sum, ans) => sum + ans.score, 0);
-    const resultType = determineType(totalScore);
+    // ==========================================
+    // イベントリスナー設定
+    // ==========================================
+    btnStart.addEventListener('click', startQuiz);
+    btnRestart.addEventListener('click', restartQuiz);
     
-    const encodedData = userAnswers.map(a => a.optionIndex).join('');
-    const diagnosisId = `FK-${encodedData}`;
-
-    renderResultView(resultType, diagnosisId);
-  }
-
-  // 診断IDからの復元処理
-  function handleRestore() {
-    const inputVal = restoreInput.value.trim().toUpperCase();
-    restoreError.style.display = 'none';
-
-    const prefix = "FK-";
-    if (!inputVal.startsWith(prefix)) {
-      restoreError.style.display = 'block';
-      return;
-    }
-
-    const rawData = inputVal.replace(prefix, '');
-    if (typeof questions === 'undefined' || rawData.length !== questions.length || isNaN(rawData)) {
-      restoreError.style.display = 'block';
-      return;
-    }
-
-    let totalScore = 0;
-    for (let i = 0; i < rawData.length; i++) {
-      const optIdx = parseInt(rawData[i], 10);
-      const q = questions[i];
-      if (q && q.options[optIdx]) {
-        totalScore += q.options[optIdx].score;
-      } else {
-        restoreError.style.display = 'block';
-        return;
-      }
-    }
-
-    const resultType = determineType(totalScore);
-    renderResultView(resultType, inputVal);
-  }
-
-  // 結果表示の共通処理
-  function renderResultView(typeKey, diagnosisId) {
-    if (typeof resultsData === 'undefined' || !resultsData[typeKey]) return;
-    const data = resultsData[typeKey];
-
-    document.getElementById('result-type-badge').textContent = data.badge || '';
-    document.getElementById('result-type-name').textContent = data.name || '';
-    document.getElementById('result-id').textContent = diagnosisId;
-    const ctaPreview = document.getElementById('cta-id-preview');
-    if (ctaPreview) ctaPreview.textContent = diagnosisId;
-    document.getElementById('result-status-text').textContent = data.statusText || '';
-
-    const actionList = document.getElementById('result-action-list');
-    actionList.innerHTML = '';
-    if (data.actions) {
-      data.actions.forEach(act => {
-        const li = document.createElement('li');
-        li.textContent = act;
-        actionList.appendChild(li);
-      });
-    }
-
-    // LINEボタンの動作設定（「相談を希望します」のみ自動入力）
+    // LINEボタンの動作設定
     const lineBtn = document.getElementById('line-btn');
     if (lineBtn) {
       lineBtn.onclick = () => {
-        // ▼ ここにご自身のLINE公式アカウントIDを入力してください（例: "@123abcde"）
-        const lineId = "@506hokix"; 
+        // あなたのLINE公式アカウントID（例: @123abcde）
+        const lineId = "@YOUR_LINE_ID"; 
 
-        // 自動入力するメッセージ
-        const message = "相談を希望します";
+        // 送信するメッセージの作成
+        const message = `【診断ID】${diagnosisId}\nLINE相談を希望します。`;
 
-        // LINE起動用URL生成
+        // LINE起動用URLの生成（メッセージをURLエンコード）
         const lineUrl = `https://line.me/R/oaMessage/${lineId}/?${encodeURIComponent(message)}`;
 
         // LINEアプリを開く
@@ -172,26 +69,219 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     }
 
-    showScreen(resultScreen);
-  }
+    // 選択肢ボタンにイベント追加
+    optionButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const score = parseInt(e.currentTarget.getAttribute('data-score'), 10);
+            handleAnswer(score);
+        });
+    });
 
-  // タイプ判定ロジック
-  function determineType(score) {
-    if (score <= 5) return 'typeA';
-    if (score <= 10) return 'typeB';
-    return 'typeC';
-  }
+    // ==========================================
+    // 画面遷移・制御処理
+    // ==========================================
+    
+    // 指定の画面を表示する関数
+    function showScreen(screenKey) {
+        Object.keys(screens).forEach(key => {
+            screens[key].classList.remove('active');
+        });
+        screens[screenKey].classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-  // 画面切り替え
-  function showScreen(screen) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    screen.classList.add('active');
-  }
+    // 診断スタート
+    function startQuiz() {
+        currentQuestionIndex = 0;
+        userAnswers = [];
+        showScreen('question');
+        renderQuestion();
+    }
 
-  // リセット
-  function resetQuiz() {
-    restoreInput.value = '';
-    restoreError.style.display = 'none';
-    showScreen(startScreen);
-  }
+    // もう一度診断する
+    function restartQuiz() {
+        showScreen('top');
+    }
+
+    // 質問描画処理
+    function renderQuestion() {
+        const currentQ = QUESTIONS_DATA[currentQuestionIndex];
+        const totalQ = QUESTIONS_DATA.length;
+
+        // 進捗表示の更新
+        questionNumber.textContent = `質問 ${currentQuestionIndex + 1} / ${totalQ}`;
+        const percent = Math.round(((currentQuestionIndex + 1) / totalQ) * 100);
+        progressPercent.textContent = `${percent}%`;
+        progressBarFill.style.width = `${percent}%`;
+
+        // 質問文の更新
+        questionText.textContent = currentQ.text;
+
+        // ランダムメッセージの更新
+        const msgIndex = Math.floor(Math.random() * RANDOM_MESSAGES.length);
+        randomMessage.textContent = RANDOM_MESSAGES[msgIndex];
+    }
+
+    // 回答選択時の処理
+    function handleAnswer(score) {
+        // 回答データを記録
+        const currentQ = QUESTIONS_DATA[currentQuestionIndex];
+        userAnswers.push({
+            axis: currentQ.axis,
+            score: score
+        });
+
+        // カードのスライドアニメーション処理（左へ消える）
+        questionCard.classList.add('slide-out-left');
+
+        setTimeout(() => {
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < QUESTIONS_DATA.length) {
+                // 次の質問を表示して右からスライドイン
+                questionCard.classList.remove('slide-out-left');
+                questionCard.classList.add('slide-in-right');
+                
+                renderQuestion();
+
+                // アニメーションクラスのリセット
+                setTimeout(() => {
+                    questionCard.classList.remove('slide-in-right');
+                }, 50);
+            } else {
+                // 完了時：診断結果画面へ
+                questionCard.classList.remove('slide-out-left');
+                showResults();
+            }
+        }, 300);
+    }
+
+    // ==========================================
+    // 診断ロジック・結果生成処理
+    // ==========================================
+    function showResults() {
+        // 1. 各軸のスコア計算
+        const axisTotals = { energy: 0, school: 0, future: 0, home: 0 };
+        const axisMaxes = { energy: 0, school: 0, future: 0, home: 0 };
+
+        userAnswers.forEach(ans => {
+            axisTotals[ans.axis] += ans.score;
+            axisMaxes[ans.axis] += 3; // 1問あたり最大3点
+        });
+
+        // 100点満点換算
+        const axisScores = {
+            energy: Math.round((axisTotals.energy / axisMaxes.energy) * 100),
+            school: Math.round((axisTotals.school / axisMaxes.school) * 100),
+            future: Math.round((axisTotals.future / axisMaxes.future) * 100),
+            home: Math.round((axisTotals.home / axisMaxes.home) * 100)
+        };
+
+        // 2. 総合点の算出（重み付け）
+        const finalScore = Math.round(
+            (axisScores.energy * WEIGHTS.energy) +
+            (axisScores.school * WEIGHTS.school) +
+            (axisScores.future * WEIGHTS.future) +
+            (axisScores.home * WEIGHTS.home)
+        );
+
+        // 3. 最もスコアが低い軸（ボトルネック）を特定
+        let lowestAxis = 'energy';
+        let lowestScore = axisScores.energy;
+
+        Object.keys(axisScores).forEach(axis => {
+            if (axisScores[axis] < lowestScore) {
+                lowestScore = axisScores[axis];
+                lowestAxis = axis;
+            }
+        });
+
+        // 4. 結果表示の更新
+        renderResultScreen(finalScore, lowestAxis);
+        showScreen('result');
+    }
+
+    // 診断結果画面のDOM描画
+    function renderResultScreen(finalScore, lowestAxis) {
+        // ランダム診断ID生成
+        document.getElementById('result-id').textContent = generateDiagnosticId();
+
+        // タイプ情報の取得
+        const typeInfo = TYPES_DATA[lowestAxis];
+
+        // 描画設定
+        document.getElementById('type-title').textContent = typeInfo.title;
+        document.getElementById('type-status').textContent = typeInfo.status;
+        document.getElementById('type-strength').textContent = typeInfo.strength;
+        document.getElementById('type-challenge').textContent = typeInfo.challenge;
+        document.getElementById('type-action').textContent = typeInfo.action;
+        document.getElementById('type-avoid').textContent = typeInfo.avoid;
+        document.getElementById('type-message').textContent = typeInfo.message;
+
+        // ロードマップの描画
+        renderRoadmap(typeInfo.roadmapStep);
+
+        // 数字カウントアップアニメーション
+        animateScoreCount(finalScore);
+
+        // スクロールフェードイン効果の適用
+        initScrollAnimations();
+    }
+
+    // 診断IDの生成 (例: FK-240731-3842)
+    function generateDiagnosticId() {
+        const today = new Date();
+        const yy = String(today.getFullYear()).slice(-2);
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const randomNum = Math.floor(1000 + Math.random() * 9000);
+        return `FK-${yy}${mm}${dd}-${randomNum}`;
+    }
+
+    // スコアカウントアップ表示
+    function animateScoreCount(targetScore) {
+        const scoreElem = document.getElementById('score-number');
+        let current = 0;
+        const duration = 1200; // 1.2秒
+        const stepTime = 20;
+        const increment = targetScore / (duration / stepTime);
+
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= targetScore) {
+                current = targetScore;
+                clearInterval(timer);
+            }
+            scoreElem.textContent = Math.floor(current);
+        }, stepTime);
+    }
+
+    // ロードマップ描画
+    function renderRoadmap(currentStepNumber) {
+        const container = document.getElementById('roadmap-container');
+        container.innerHTML = '';
+
+        ROADMAP_STEPS.forEach(step => {
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'roadmap-step';
+            if (step.step === currentStepNumber) {
+                stepDiv.classList.add('active');
+            }
+            stepDiv.textContent = `${step.step}. ${step.name}`;
+            container.appendChild(stepDiv);
+        });
+    }
+
+    // スクロールによる結果セクションフェードイン表示
+    function initScrollAnimations() {
+        const sections = document.querySelectorAll('.result-section');
+        
+        // 最初は順次フェードインさせる
+        sections.forEach((sec, index) => {
+            setTimeout(() => {
+                sec.classList.add('visible');
+            }, 200 * index);
+        });
+    }
 });
+
