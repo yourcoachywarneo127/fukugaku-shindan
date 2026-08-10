@@ -1,3 +1,29 @@
+/**
+ * 復学可能性診断 Webアプリ - メイン処理
+ * Version: 1.0
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ==========================================
+    // 設定 & 定数
+    // ==========================================
+    // LINE公式アカウント等の遷移先URL（後から差し替え可能）
+    const LINE_REDIRECT_URL = "https://lin.ee/TSJe0Uw";
+
+    // 軸ごとの重み付け（合計1.0）
+    const WEIGHTS = {
+        energy: 0.4,
+        school: 0.3,
+        future: 0.2,
+        home: 0.1
+    };
+
+    // ==========================================
+    // アプリケーション状態 (State)
+    // ==========================================
+    let currentQuestionIndex = 0;
+    let userAnswers = []; // 各質問に対するスコアを保持
+
 document.addEventListener('DOMContentLoaded', () => {
   let currentQuestionIndex = 0;
   let userAnswers = [];
