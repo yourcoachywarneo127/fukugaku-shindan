@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (lineBtn) {
       lineBtn.onclick = () => {
         // あなたのLINE公式アカウントID（例: @123abcde）
-        const lineId = "@YOUR_LINE_ID"; 
+        const lineId = "@506hokix"; 
 
         // 送信するメッセージの作成
         const message = `【診断ID】${diagnosisId}\nLINE相談を希望します。`;
