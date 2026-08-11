@@ -61,7 +61,7 @@ if (lineBtn) {
 
         // 2. LINE送信用URLの作成
         const lineId = "@506hokix"; 
-        const message = "相談を希望します";
+        const message = "相談を希望します^^";
         const lineUrl = `https://line.me/R/oaMessage/${lineId}/?${encodeURIComponent(message)}`;
 
         // 3. 元の診断結果画面を維持したまま、別タブ/別ウィンドウでLINEを開く
