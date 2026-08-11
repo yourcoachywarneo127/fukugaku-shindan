@@ -51,17 +51,23 @@ document.addEventListener('DOMContentLoaded', () => {
     btnStart.addEventListener('click', startQuiz);
     btnRestart.addEventListener('click', restartQuiz);
     
-    // LINEボタンの動作設定
-    const btnLine = document.getElementById('line-btn');
-    if (btnLine) {
-      btnLine.onclick = () => {
+   // LINEボタンの設定（IDが 'btn-line' でも 'line-btn' でもどちらでも取得できます）
+const lineBtn = document.getElementById('line-btn') || document.getElementById('btn-line');
+
+if (lineBtn) {
+    lineBtn.addEventListener('click', (e) => {
+        // 1. デフォルトの挙動（トップへのジャンプや再読み込み）を防止
+        e.preventDefault();
+
+        // 2. LINE送信用URLの作成
         const lineId = "@506hokix"; 
         const message = "相談を希望します";
         const lineUrl = `https://line.me/R/oaMessage/${lineId}/?${encodeURIComponent(message)}`;
 
-        window.location.href = lineUrl;
-      };
-    }
+        // 3. 元の診断結果画面を維持したまま、別タブ/別ウィンドウでLINEを開く
+        window.open(lineUrl, '_blank');
+    });
+}
 
     // 選択肢ボタンにイベント追加
     optionButtons.forEach(btn => {
