@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnRestart.addEventListener('click', restartQuiz);
     
     // LINEボタンの動作設定
-    const lineBtn　= document.getElementById('line-btn');
+    const lineBtn = document.getElementById('line-btn');
     if (lineBtn) {
       lineBtn.onclick = () => {
         const lineId = "@506hokix"; 
